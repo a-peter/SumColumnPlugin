@@ -4,7 +4,7 @@ from __future__ import (unicode_literals, division, absolute_import,
                         print_function)
 
 __license__   = 'GPL v3'
-__copyright__ = '2011, Kovid Goyal <kovid@kovidgoyal.net>'
+__copyright__ = '2019, Anselm Peter <anselm.peter@web.de>'
 __docformat__ = 'restructuredtext en'
 
 if False:
@@ -23,7 +23,6 @@ from calibre.gui2 import question_dialog
 from calibre.gui2.actions import InterfaceAction
 
 import calibre_plugins.sum_column.config as config
-from calibre_plugins.sum_column.main import SumColumnDialog
 
 class InterfacePlugin(InterfaceAction):
 
@@ -33,7 +32,7 @@ class InterfacePlugin(InterfaceAction):
     # The keyboard shortcut can be None if you dont want to use a keyboard
     # shortcut. Remember that currently calibre has no central management for
     # keyboard shortcuts, so try to use an unusual/unused shortcut.
-    action_spec = ('Sum Column', None, 'Run the Sum Column plugin', 'Ctrl+Shift+F1')
+    action_spec = ('Sum Column', None, 'Run the Sum Column plugin', None)
 	popup_type = QToolButton.MenuButtonPopup
 	action_type = 'current'
 
@@ -62,7 +61,6 @@ class InterfacePlugin(InterfaceAction):
         # above
 		self.qaction.setMenu(self.menu)
         self.qaction.setIcon(icon)
-        #self.qaction.triggered.connect(self.show_dialog)
 		self.qaction.triggered.connect(self.toolbar_action)
 
 	def toolbar_action(self):
@@ -98,41 +96,16 @@ class InterfacePlugin(InterfaceAction):
 		# get the database label for the selected # format of the column
 		lbl = db.field_metadata.key_to_label(column)
 		print(column, 'is known as', lbl)
-		#print(dir(db))
 		sum = 0.0
 		for book_id in book_ids:
-			#title = db.title(book_id, index_is_id = True)
-			#value = db.field_for(column, book_id)
 			value = db.get_custom(book_id, label=lbl, index_is_id=True)
-			#print(book_id, title, column, value)
-			#print(db.custom_field_keys())
 			if not value is None:
-				sum += value
+				try:
+					sum += value
+				except:
+					print('Invalid value to sum up')
 		print('sum is', sum)
-			
 	
-    def show_dialog(self):
-        # The base plugin object defined in __init__.py
-        base_plugin_object = self.interface_action_base_plugin
-
-        # Show the config dialog
-        # The config dialog can also be shown from within
-        # Preferences->Plugins, which is why the do_user_config
-        # method is defined on the base plugin class
-        do_user_config = base_plugin_object.do_user_config
-
-        # self.gui is the main calibre GUI. It acts as the gateway to access
-        # all the elements of the calibre user interface, it should also be the
-        # parent of the dialog
-        d = SumColumnDialog(self.gui, self.qaction.icon(), do_user_config)
-        d.show()
-
-    def apply_settings(self):
-        from calibre_plugins.sum_column.config import prefs
-        # In an actual non trivial plugin, you would probably need to
-        # do something based on the settings in prefs
-        prefs
-
 	def show_configuration(self):
 		self.interface_action_base_plugin.do_user_config(self.gui)
 		

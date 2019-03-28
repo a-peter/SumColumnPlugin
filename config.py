@@ -9,7 +9,10 @@ __docformat__ = 'restructuredtext en'
 
 import copy
 
-from PyQt5.Qt import QWidget, QGridLayout, QLabel, QLineEdit
+try:
+	from PyQt5.Qt import QWidget, QGridLayout, QLabel
+except ImportError:
+	from PyQt4.Qt import QWidget, QGridLayout, QLabel
 
 from calibre.utils.config import JSONConfig
 
@@ -20,6 +23,8 @@ PREFS_NAMESPACE = 'SumColumnPlugin'
 PREFS_KEY_SETTINGS = 'settings'
 
 PREFS_KEY_COLUMN = 'column'
+PREFS_KEY_SCHEMA_VERSION = 'SchemaVersion'
+DEFAULT_SCHEMA_VERSION = 1
 
 DEFAULT_LIBRARY_VALUES = {
 	PREFS_KEY_COLUMN: ''
@@ -39,14 +44,21 @@ prefs = JSONConfig('plugins/sum_column')
 # Set defaults
 prefs.defaults[STORE_NAME] = DEFAULT_STORE_VALUES
 
+def migrate_library(db, library_config):
+	schema_version = library_config.get(PREFS_KEY_SCHEMA_VERSION, 0)
+	if schema_version == DEFAULT_SCHEMA_VERSION:
+		return
+		
+	library_config[PREFS_KEY_SCHEMA_VERSION] = DEFAULT_SCHEMA_VERSION
+	
+	set_library_config(db, library_config)
+
 def get_library_config(db):
 	library_config = db.prefs.get_namespaced(PREFS_NAMESPACE, PREFS_KEY_SETTINGS, copy.deepcopy(DEFAULT_LIBRARY_VALUES))
-	# Todo: add data migration for further config changes
-	print("got config", library_config)
+	migrate_library(db, library_config)
 	return library_config
 	
 def set_library_config(db, library_config):
-	print("setting config", library_config)
 	db.prefs.set_namespaced(PREFS_NAMESPACE, PREFS_KEY_SETTINGS, library_config)
 	
 def get_library_config_field(db, field):

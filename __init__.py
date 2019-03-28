@@ -72,10 +72,3 @@ class InterfaceSumColumn(InterfaceActionBase):
         :param config_widget: The widget returned by :meth:`config_widget`.
         '''
         config_widget.save_settings()
-
-        # Apply the changes
-        ac = self.actual_plugin_
-        if ac is not None:
-            ac.apply_settings()
-
-
