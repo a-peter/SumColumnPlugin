@@ -4,7 +4,7 @@ from __future__ import (unicode_literals, division, absolute_import,
                         print_function)
 
 __license__   = 'GPL v3'
-__copyright__ = '2011, Kovid Goyal <kovid@kovidgoyal.net>'
+__copyright__ = '2019, Anselm Peter <anselm.peter@web.de>'
 __docformat__ = 'restructuredtext en'
 
 if False:
@@ -13,10 +13,85 @@ if False:
     # You do not need this code in your plugins
     get_icons = get_resources = None
 
+import copy
+
 from PyQt5.Qt import QDialog, QVBoxLayout, QPushButton, QMessageBox, QLabel
 
-from calibre_plugins.sum_column.config import prefs
+from calibre.utils.config import JSONConfig
 
+from calibre_plugins.sum_column.config import prefs
+from calibre_plugins.sum_column.utils import (get_library_uuid, CustomColumnComboBox)
+
+PREFS_NAMESPACE = 'SumColumnPlugin'
+PREFS_KEY_SETTINGS = 'settings'
+
+KEY_CUSTOM_COLUMN = 'customColumn'
+
+STORE_NAME = 'Options'
+
+DEFAULT_STORE_VALUES = {
+                        }
+
+DEFAULT_LIBRARY_VALUES = {
+                          KEY_CUSTOM_COLUMN: ''
+                          }
+
+# This is where all preferences for this plugin will be stored
+plugin_prefs = JSONConfig('plugins/SumColumn')
+
+# Set defaults
+plugin_prefs.defaults[STORE_NAME] = DEFAULT_STORE_VALUES
+
+
+def migrate_library_config_if_required(db, library_config):
+    schema_version = library_config.get(KEY_SCHEMA_VERSION, 0)
+    if schema_version == DEFAULT_SCHEMA_VERSION:
+        return
+    # We have changes to be made - mark schema as updated
+    library_config[KEY_SCHEMA_VERSION] = DEFAULT_SCHEMA_VERSION
+
+    # Any migration code in future will exist in here.
+    if schema_version < 1.61:
+        if 'customColumn' in library_config:
+            print('Migrating Count Pages plugin custom column for pages to new schema')
+            library_config[KEY_PAGES_CUSTOM_COLUMN] = library_config['customColumn']
+            del library_config['customColumn']
+        store_prefs = plugin_prefs[STORE_NAME]
+        if KEY_PAGES_ALGORITHM not in library_config:
+            print('Migrating Count Pages plugin algorithm for pages to new schema')
+            library_config[KEY_PAGES_ALGORITHM] = store_prefs.get('algorithm', 0)
+            # Unfortunately cannot delete since user may have other libraries
+        if 'algorithmWords' in store_prefs:
+            print('Deleting Count Pages plugin word algorithm')
+            del store_prefs['algorithmWords']
+            plugin_prefs[STORE_NAME] = store_prefs        
+
+    set_library_config(db, library_config)
+
+def get_library_config(db):
+    library_id = get_library_uuid(db)
+    library_config = None
+    # Check whether this is a configuration needing to be migrated from json into database
+    if 'libraries' in plugin_prefs:
+        libraries = plugin_prefs['libraries']
+        if library_id in libraries:
+            # We will migrate this below
+            library_config = libraries[library_id]
+            # Cleanup from json file so we don't ever do this again
+            del libraries[library_id]
+            if len(libraries) == 0:
+                # We have migrated the last library for this user
+                del plugin_prefs['libraries']
+            else:
+                plugin_prefs['libraries'] = libraries
+
+    if library_config is None:
+        library_config = db.prefs.get_namespaced(PREFS_NAMESPACE, PREFS_KEY_SETTINGS,
+                                                 copy.deepcopy(DEFAULT_LIBRARY_VALUES))
+    migrate_library_config_if_required(db, library_config)
+    return library_config
+
+						  
 class SumColumnDialog(QDialog):
 
     def __init__(self, gui, icon, do_user_config):
@@ -31,8 +106,32 @@ class SumColumnDialog(QDialog):
         # a much nicer interface from db/cache.py
         self.db = gui.current_db
 
+		# Find user defined columns of type int or float
+		avail_columns = self.get_custom_columns()
+		for key, column in avail_columns.iteritems():
+			print(key, column)
+		print(avail_columns)
+        #library_config = get_library_config(self.gui.current_db)
+
+		# prepare gui
         self.l = QVBoxLayout()
         self.setLayout(self.l)
+
+        column_label = QLabel("Spalte", self) # QLabel(_('&Custom column:'), self)
+        toolTip = ('Leave this blank if you do not want to count pages')
+        column_label.setToolTip(toolTip)
+		
+		column_from_preferences = '' #library_config.get(KEY_PAGES_CUSTOM_COLUMN, '')
+        self.column_combo = CustomColumnComboBox(self, avail_columns, column_from_preferences)
+        self.column_combo.setToolTip(toolTip)
+        column_label.setBuddy(self.column_combo)
+        
+		self.l.addWidget(column_label)
+		self.l.addWidget(self.column_combo)
+		
+		#page_group_box_layout.addWidget(page_column_label, 0, 0, 1, 1)
+        #page_group_box_layout.addWidget(self.page_column_combo, 0, 1, 1, 2)
+
 
         self.label = QLabel(prefs['hello_world_msg'])
         self.l.addWidget(self.label)
@@ -65,6 +164,7 @@ class SumColumnDialog(QDialog):
         self.l.addWidget(self.conf_button)
 
         self.resize(self.sizeHint())
+		
 
     def about(self):
         # Get the about text from a file inside the plugin zip file
@@ -153,3 +253,12 @@ class SumColumnDialog(QDialog):
         # Apply the changes
         self.label.setText(prefs['hello_world_msg'])
 
+    def get_custom_columns(self):
+        column_types = ['float','int']
+        custom_columns = self.gui.library_view.model().custom_columns
+        available_columns = {}
+        for key, column in custom_columns.iteritems():
+            typ = column['datatype']
+            if typ in column_types:
+                available_columns[key] = column
+        return available_columns

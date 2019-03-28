@@ -13,6 +13,11 @@ if False:
     # You do not need this code in your plugins
     get_icons = get_resources = None
 
+try:
+    from PyQt5.Qt import QToolButton, QMenu, QIcon
+except ImportError:
+    from PyQt4.Qt import QToolButton, QMenu, QIcon
+	
 # The class that all interface action plugins must inherit from
 from calibre.gui2.actions import InterfaceAction
 from calibre_plugins.sum_column.main import SumColumnDialog
@@ -25,8 +30,9 @@ class InterfacePlugin(InterfaceAction):
     # The keyboard shortcut can be None if you dont want to use a keyboard
     # shortcut. Remember that currently calibre has no central management for
     # keyboard shortcuts, so try to use an unusual/unused shortcut.
-    action_spec = ('Sum Column', None,
-            'Run the Sum Column plugin', 'Ctrl+Shift+F1')
+    action_spec = ('Sum Column', None, 'Run the Sum Column plugin', 'Ctrl+Shift+F1')
+	popup_type = QToolButton.MenuButtonPopup
+	action_type = 'current'
 
     def genesis(self):
         # This method is called once per plugin, do initial setup here
@@ -43,14 +49,20 @@ class InterfacePlugin(InterfaceAction):
         # are not found in the zip file will result in null QIcons.
         icon = get_icons('images/icon.png')
 
+		self.menu = QMenu(self.gui)
+		action = self.create_menu_action(self.menu, "SumColumnConfig", "Anpassen...", triggered=self.show_configuration)
+		action.setIcon(QIcon(I('config.png')))
+		
         # The qaction is automatically created from the action_spec defined
         # above
+		self.qaction.setMenu(self.menu)
         self.qaction.setIcon(icon)
         self.qaction.triggered.connect(self.show_dialog)
 
     def show_dialog(self):
         # The base plugin object defined in __init__.py
         base_plugin_object = self.interface_action_base_plugin
+
         # Show the config dialog
         # The config dialog can also be shown from within
         # Preferences->Plugins, which is why the do_user_config
@@ -69,3 +81,5 @@ class InterfacePlugin(InterfaceAction):
         # do something based on the settings in prefs
         prefs
 
+	def show_configuration(self):
+		self.interface_action_base_plugin.do_user_config(self.gui)

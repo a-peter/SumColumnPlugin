@@ -4,7 +4,7 @@ from __future__ import (unicode_literals, division, absolute_import,
                         print_function)
 
 __license__   = 'GPL v3'
-__copyright__ = '2011, Kovid Goyal <kovid@kovidgoyal.net>'
+__copyright__ = '2019, Anselm Peter <anselm.peter@web.de>'
 __docformat__ = 'restructuredtext en'
 
 from PyQt5.Qt import QWidget, QHBoxLayout, QLabel, QLineEdit
@@ -19,7 +19,7 @@ from calibre.utils.config import JSONConfig
 prefs = JSONConfig('plugins/sum_column')
 
 # Set defaults
-prefs.defaults['hello_world_msg'] = 'Hello, World!'
+prefs.defaults['column'] = ''
 
 class ConfigWidget(QWidget):
 
@@ -32,10 +32,10 @@ class ConfigWidget(QWidget):
         self.l.addWidget(self.label)
 
         self.msg = QLineEdit(self)
-        self.msg.setText(prefs['hello_world_msg'])
+        self.msg.setText(prefs['column'])
         self.l.addWidget(self.msg)
         self.label.setBuddy(self.msg)
 
     def save_settings(self):
-        prefs['hello_world_msg'] = unicode(self.msg.text())
+        prefs['column'] = unicode(self.msg.text())
 
