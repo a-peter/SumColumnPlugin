@@ -19,7 +19,10 @@ except ImportError:
     from PyQt4.Qt import QToolButton, QMenu, QIcon
 	
 # The class that all interface action plugins must inherit from
+from calibre.gui2 import question_dialog
 from calibre.gui2.actions import InterfaceAction
+
+import calibre_plugins.sum_column.config as config
 from calibre_plugins.sum_column.main import SumColumnDialog
 
 class InterfacePlugin(InterfaceAction):
@@ -34,7 +37,9 @@ class InterfacePlugin(InterfaceAction):
 	popup_type = QToolButton.MenuButtonPopup
 	action_type = 'current'
 
+	# inherited method
     def genesis(self):
+		self.is_library_selected = True
         # This method is called once per plugin, do initial setup here
 
         # Set the icon for this interface action
@@ -57,8 +62,55 @@ class InterfacePlugin(InterfaceAction):
         # above
 		self.qaction.setMenu(self.menu)
         self.qaction.setIcon(icon)
-        self.qaction.triggered.connect(self.show_dialog)
+        #self.qaction.triggered.connect(self.show_dialog)
+		self.qaction.triggered.connect(self.toolbar_action)
 
+	def toolbar_action(self):
+		if not self._check_preconditions_for_sum():
+			return
+		column = config.get_library_config_field(self.gui.current_db, config.PREFS_KEY_COLUMN)
+		book_ids = self.gui.library_view.get_selected_ids()
+		print('summing up', column, 'for', len(book_ids), 'books:', book_ids)
+		
+		self._do_sum_up(book_ids, column)
+		
+	def _check_preconditions_for_sum(self):
+		# Test if any library is active in calibre
+		if not self.is_library_selected:
+			print('No library selected, aborting')
+			return False
+		# Test if at least one book is selected
+        rows = self.gui.library_view.selectionModel().selectedRows()
+		if not rows or len(rows) == 0:
+			print('No rows selected, aborting')
+			return False
+		# Test if a column to sum is selected in the configuration
+		column = config.get_library_config_field(self.gui.current_db, config.PREFS_KEY_COLUMN)
+		if not column:
+			if not question_dialog(self.gui, 'Configure plugin', '<p>' + 'Keine Spalte ausgewählt. Wollen Sie jetzt eine Spalte auswählen?', show_copy_button=False):
+				return False
+			self.show_configuration()
+			return False
+		return True
+
+	def _do_sum_up(self, book_ids, column):
+		db = self.gui.current_db
+		# get the database label for the selected # format of the column
+		lbl = db.field_metadata.key_to_label(column)
+		print(column, 'is known as', lbl)
+		#print(dir(db))
+		sum = 0.0
+		for book_id in book_ids:
+			#title = db.title(book_id, index_is_id = True)
+			#value = db.field_for(column, book_id)
+			value = db.get_custom(book_id, label=lbl, index_is_id=True)
+			#print(book_id, title, column, value)
+			#print(db.custom_field_keys())
+			if not value is None:
+				sum += value
+		print('sum is', sum)
+			
+	
     def show_dialog(self):
         # The base plugin object defined in __init__.py
         base_plugin_object = self.interface_action_base_plugin
@@ -83,3 +135,7 @@ class InterfacePlugin(InterfaceAction):
 
 	def show_configuration(self):
 		self.interface_action_base_plugin.do_user_config(self.gui)
+		
+	def location_selected(self, location):
+		self.is_library_selected = location == 'library'
+		

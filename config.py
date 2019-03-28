@@ -15,12 +15,21 @@ from calibre.utils.config import JSONConfig
 
 from calibre_plugins.sum_column.utils import (get_library_uuid, CustomColumnComboBox)
 
+# Library specific configuration
 PREFS_NAMESPACE = 'SumColumnPlugin'
 PREFS_KEY_SETTINGS = 'settings'
 
 PREFS_KEY_COLUMN = 'column'
 
-# This is where all preferences for this plugin will be stored
+DEFAULT_LIBRARY_VALUES = {
+	PREFS_KEY_COLUMN: ''
+}
+
+# Plugin specific configuration
+STORE_NAME = 'Options'
+DEFAULT_STORE_VALUES = {}
+
+# This is where all preferences for this *plugin* will be stored
 # Remember that this name (i.e. plugins/sum_column) is also
 # in a global namespace, so make it as unique as possible.
 # You should always prefix your config file name with plugins/,
@@ -28,20 +37,21 @@ PREFS_KEY_COLUMN = 'column'
 prefs = JSONConfig('plugins/sum_column')
 
 # Set defaults
-prefs.defaults[PREFS_KEY_COLUMN] = ''
-
-DEFAULT_LIBRARY_VALUES = {
-	PREFS_KEY_COLUMN: ''
-}
+prefs.defaults[STORE_NAME] = DEFAULT_STORE_VALUES
 
 def get_library_config(db):
 	library_config = db.prefs.get_namespaced(PREFS_NAMESPACE, PREFS_KEY_SETTINGS, copy.deepcopy(DEFAULT_LIBRARY_VALUES))
+	# Todo: add data migration for further config changes
 	print("got config", library_config)
 	return library_config
 	
 def set_library_config(db, library_config):
 	print("setting config", library_config)
 	db.prefs.set_namespaced(PREFS_NAMESPACE, PREFS_KEY_SETTINGS, library_config)
+	
+def get_library_config_field(db, field):
+	library_config = get_library_config(db)
+	return library_config[field]
 
 class ConfigWidget(QWidget):
 
