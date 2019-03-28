@@ -30,7 +30,7 @@ class InterfaceSumColumn(InterfaceActionBase):
     #: This field defines the GUI plugin class that contains all the code
     #: that actually does something. Its format is module_path:class_name
     #: The specified class must be defined in the specified module.
-    actual_plugin       = 'calibre_plugins.sum_column.ui:InterfacePlugin'
+    actual_plugin       = 'calibre_plugins.sum_column.action:InterfacePlugin'
 
     def is_customizable(self):
         '''

@@ -19,7 +19,7 @@ except ImportError:
     from PyQt4.Qt import QToolButton, QMenu, QIcon
 	
 # The class that all interface action plugins must inherit from
-from calibre.gui2 import question_dialog
+from calibre.gui2 import question_dialog, info_dialog
 from calibre.gui2.actions import InterfaceAction
 
 import calibre_plugins.sum_column.config as config
@@ -105,6 +105,8 @@ class InterfacePlugin(InterfaceAction):
 				except:
 					print('Invalid value to sum up')
 		print('sum is', sum)
+		info_dialog(self.gui, 'Sum Column', '<p>' + 'Die Summe der Spalte ' + column + ' von ' + str(len(book_ids)) + ' Büchern ist ' + str(sum), show=True, show_copy_button=False)
+		self.gui.status_bar.show_message('Summe ist %d' % sum)
 	
 	def show_configuration(self):
 		self.interface_action_base_plugin.do_user_config(self.gui)
