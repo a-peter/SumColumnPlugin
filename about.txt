@@ -1,0 +1,7 @@
+Plugin to sum up a numerical column
+===================================
+
+Created by Anselm Peter
+
+Requires calibre >= 0.7.53
+
