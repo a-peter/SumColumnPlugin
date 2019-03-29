@@ -51,18 +51,28 @@ class InterfacePlugin(InterfaceAction):
 		# should pass a list of names to get_icons. In this case, get_icons
 		# will return a dictionary mapping names to QIcons. Names that
 		# are not found in the zip file will result in null QIcons.
-		icon = get_icons('images/icon.png')
-
-		self.menu = QMenu(self.gui)
-		action = self.create_menu_action(self.menu, 'SumColumnConfig', '&Anpassen' + '...', triggered=self.show_configuration)
-		action.setIcon(QIcon(I('config.png')))
+		self.icon = get_icons('images/icon.png')
+		
+		self.build_menu()
 
 		# The qaction is automatically created from the action_spec defined
 		# above
 		self.qaction.setMenu(self.menu)
-		self.qaction.setIcon(icon)
+		self.qaction.setIcon(self.icon)
 		self.qaction.triggered.connect(self.toolbar_action)
 
+	def build_menu(self):
+		# build up menu
+		self.menu = QMenu(self.gui)
+
+		action = self.create_menu_action(self.menu, 'SumColumnExecute', 'Aus&führen', triggered=self.toolbar_action)
+		action.setIcon(self.icon)
+		
+		self.menu.addSeparator()
+		
+		action = self.create_menu_action(self.menu, 'SumColumnConfig', '&Anpassen' + '...', triggered=self.show_configuration)
+		action.setIcon(QIcon(I('config.png')))		
+		
 	def toolbar_action(self):
 		if not self._check_preconditions_for_sum():
 			return
