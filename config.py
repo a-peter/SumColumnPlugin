@@ -67,8 +67,8 @@ def get_library_config_field(db, field):
 
 class ConfigWidget(QWidget):
 
-    def __init__(self, plugin_action):
-        QWidget.__init__(self)
+	def __init__(self, plugin_action):
+		QWidget.__init__(self)
 		self.plugin_action = plugin_action
 
 		# Find user defined columns of type int or float
@@ -76,41 +76,40 @@ class ConfigWidget(QWidget):
 		#for key, column in available_columns.iteritems():
 		#	print(key, column)
 		#print(available_columns)
-		
+
 		# Get the current database
 		database = self.plugin_action.gui.current_db
 		library_config = get_library_config(database)
-		
+
 		# Build the gui
-        self.layout = QGridLayout()
-        self.setLayout(self.layout)
+		self.layout = QGridLayout()
+		self.setLayout(self.layout)
 
 		toolTip = 'Spalte, die summiert werden soll'
 		column_label = QLabel('Spalte', self)
 		column_label.setToolTip(toolTip)
-		
+
 		column_from_preferences = library_config[PREFS_KEY_COLUMN]
 		self.column_combo = CustomColumnComboBox(self, available_columns, column_from_preferences)
 		self.column_combo.setToolTip(toolTip)
-		
+
 		self.layout.addWidget(column_label, 0, 0, 1, 1)
 		self.layout.addWidget(self.column_combo, 0, 1, 1, 2)
 
-    def save_settings(self):
+	def save_settings(self):
 		database = self.plugin_action.gui.current_db
 		prefs = get_library_config(database)
 		
-		print(self.column_combo.get_selected_column())
 		prefs[PREFS_KEY_COLUMN] = unicode(self.column_combo.get_selected_column())
 		
 		set_library_config(database, prefs)
 
-    def get_custom_columns(self):
-        valid_column_types = ['float','int']
-        custom_columns = self.plugin_action.gui.library_view.model().custom_columns
-        available_columns = {}
-        for key, column in custom_columns.iteritems():
-            datatype = column['datatype']
-            if datatype in valid_column_types:
-                available_columns[key] = column
-        return available_columns
+	def get_custom_columns(self):
+		valid_column_types = ['float','int']
+		custom_columns = self.plugin_action.gui.library_view.model().custom_columns
+		available_columns = {}
+		for key, column in custom_columns.iteritems():
+			datatype = column['datatype']
+			if datatype in valid_column_types:
+				available_columns[key] = column
+		return available_columns

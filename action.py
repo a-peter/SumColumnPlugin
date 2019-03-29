@@ -8,16 +8,16 @@ __copyright__ = '2019, Anselm Peter <anselm.peter@mail.de>'
 __docformat__ = 'restructuredtext en'
 
 if False:
-    # This is here to keep my python error checker from complaining about
-    # the builtin functions that will be defined by the plugin loading system
-    # You do not need this code in your plugins
-    get_icons = get_resources = None
+	# This is here to keep my python error checker from complaining about
+	# the builtin functions that will be defined by the plugin loading system
+	# You do not need this code in your plugins
+	get_icons = get_resources = None
 
 try:
-    from PyQt5.Qt import QToolButton, QMenu, QIcon
+	from PyQt5.Qt import QToolButton, QMenu, QIcon
 except ImportError:
-    from PyQt4.Qt import QToolButton, QMenu, QIcon
-	
+	from PyQt4.Qt import QToolButton, QMenu, QIcon
+
 # The class that all interface action plugins must inherit from
 from calibre.gui2 import question_dialog, info_dialog
 from calibre.gui2.actions import InterfaceAction
@@ -26,41 +26,41 @@ import calibre_plugins.sum_column.config as config
 
 class InterfacePlugin(InterfaceAction):
 
-    name = 'Sum Column'
+	name = 'Sum Column'
 
-    # Declare the main action associated with this plugin
-    # The keyboard shortcut can be None if you dont want to use a keyboard
-    # shortcut. Remember that currently calibre has no central management for
-    # keyboard shortcuts, so try to use an unusual/unused shortcut.
-    action_spec = ('Sum Column', None, 'Summiert die Werte einer konfigurierbaren Spalte für ausgewählte Bücher.', None)
+	# Declare the main action associated with this plugin
+	# The keyboard shortcut can be None if you dont want to use a keyboard
+	# shortcut. Remember that currently calibre has no central management for
+	# keyboard shortcuts, so try to use an unusual/unused shortcut.
+	action_spec = ('Sum Column', None, 'Summiert die Werte einer konfigurierbaren Spalte für ausgewählte Bücher.', None)
 	popup_type = QToolButton.MenuButtonPopup
 	action_type = 'current'
 
 	# inherited method
-    def genesis(self):
+	def genesis(self):
 		self.is_library_selected = True
-        # This method is called once per plugin, do initial setup here
+		# This method is called once per plugin, do initial setup here
 
-        # Set the icon for this interface action
-        # The get_icons function is a builtin function defined for all your
-        # plugin code. It loads icons from the plugin zip file. It returns
-        # QIcon objects, if you want the actual data, use the analogous
-        # get_resources builtin function.
-        #
-        # Note that if you are loading more than one icon, for performance, you
-        # should pass a list of names to get_icons. In this case, get_icons
-        # will return a dictionary mapping names to QIcons. Names that
-        # are not found in the zip file will result in null QIcons.
-        icon = get_icons('images/icon.png')
+		# Set the icon for this interface action
+		# The get_icons function is a builtin function defined for all your
+		# plugin code. It loads icons from the plugin zip file. It returns
+		# QIcon objects, if you want the actual data, use the analogous
+		# get_resources builtin function.
+		#
+		# Note that if you are loading more than one icon, for performance, you
+		# should pass a list of names to get_icons. In this case, get_icons
+		# will return a dictionary mapping names to QIcons. Names that
+		# are not found in the zip file will result in null QIcons.
+		icon = get_icons('images/icon.png')
 
 		self.menu = QMenu(self.gui)
 		action = self.create_menu_action(self.menu, 'SumColumnConfig', '&Anpassen' + '...', triggered=self.show_configuration)
 		action.setIcon(QIcon(I('config.png')))
-		
-        # The qaction is automatically created from the action_spec defined
-        # above
+
+		# The qaction is automatically created from the action_spec defined
+		# above
 		self.qaction.setMenu(self.menu)
-        self.qaction.setIcon(icon)
+		self.qaction.setIcon(icon)
 		self.qaction.triggered.connect(self.toolbar_action)
 
 	def toolbar_action(self):
@@ -68,7 +68,7 @@ class InterfacePlugin(InterfaceAction):
 			return
 		column = config.get_library_config_field(self.gui.current_db, config.PREFS_KEY_COLUMN)
 		book_ids = self.gui.library_view.get_selected_ids()
-		print('summing up', column, 'for', len(book_ids))
+		print('summing up', column, 'for', len(book_ids), 'books')
 		
 		self._do_sum_up(book_ids, column)
 		
@@ -78,7 +78,7 @@ class InterfacePlugin(InterfaceAction):
 			print('No library selected, aborting')
 			return False
 		# Test if at least one book is selected
-        rows = self.gui.library_view.selectionModel().selectedRows()
+		rows = self.gui.library_view.selectionModel().selectedRows()
 		if not rows or len(rows) == 0:
 			print('No rows selected, aborting')
 			return False
