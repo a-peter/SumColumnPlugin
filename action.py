@@ -109,8 +109,15 @@ class InterfacePlugin(InterfaceAction):
 	def _do_sum_up(self, book_ids, column):
 		db = self.gui.current_db
 		# get the database label for the selected # format of the column
+		#print(db.field_metadata)
+		#print(db.field_metadata.keys())
+		#print(dir(db.field_metadata))
+		#print(db.field_metadata[column])
+		#print(dir(db.field_metadata[column]))
+		#print(db.field_metadata[column].get('name'))
 		lbl = db.field_metadata.key_to_label(column)
-		print(column, 'is known as', lbl)
+		column_name = '"%s"' % db.field_metadata[column].get('name')
+		print('%s %s is known as %s' % (column, column_name, lbl) )
 		sum = 0.0
 		for book_id in book_ids:
 			value = db.get_custom(book_id, label=lbl, index_is_id=True)
@@ -121,9 +128,9 @@ class InterfacePlugin(InterfaceAction):
 					print('Invalid value to sum up')
 		print('sum is', sum)
 		if (len(book_ids) == 1):
-			message = _('The sum of column {0} for {1} book is {2}.').format(column, str(len(book_ids)), str(sum))
+			message = _('The sum of column {0} for {1} book is {2}.').format(column_name, str(len(book_ids)), str(sum))
 		else:
-			message = _('The sum of column {0} for {1} books is {2}.').format(column, str(len(book_ids)), str(sum))		
+			message = _('The sum of column {0} for {1} books is {2}.').format(column_name, str(len(book_ids)), str(sum))		
 		info_dialog(self.gui, 'Sum Column', '<p>' + message, show=True, show_copy_button=False)
 		self.gui.status_bar.show_message(_('Sum is {0}').format(sum))
 	
