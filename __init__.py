@@ -23,7 +23,7 @@ class InterfaceSumColumn(InterfaceActionBase):
 	description         = 'Adds values of a customizable column'
 	supported_platforms = ['windows', 'osx', 'linux']
 	author              = 'Anselm Peter'
-	version             = (0, 1, 0)
+	version             = (0, 2, 0)
 	minimum_calibre_version = (0, 7, 53)
 
 	#: This field defines the GUI plugin class that contains all the code
