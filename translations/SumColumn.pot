@@ -1,0 +1,49 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2019-03-29 13:30+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=cp1252\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+
+
+#: action.py:35
+msgid "Sums up the values of a configurable column for selected books."
+msgstr ""
+
+#: action.py:68
+msgid "&Execute"
+msgstr ""
+
+#: action.py:73
+msgid "&Configure"
+msgstr ""
+
+#: action.py:98
+msgid "No column selected. Do you want to select a column to sum up now?"
+msgstr ""
+
+#: action.py:118
+msgid "The sum of column {0} for {1} books is {2}."
+msgstr ""
+
+#: action.py:120
+msgid "Sum is {0}"
+msgstr ""
+
+#: config.py:88
+msgid "Column to be summed up"
+msgstr ""
+
+#: config.py:89
+msgid "Column"
+msgstr ""
+
