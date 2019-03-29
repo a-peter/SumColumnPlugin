@@ -14,8 +14,10 @@ msgstr ""
 "Generated-By: pygettext.py 1.5\n"
 "X-Generator: Poedit 2.2.1\n"
 "Last-Translator: \n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"Language: de\n"
+
+#: action.py:40
+msgid "Sum Column"
+msgstr ""
 
 #: action.py:40
 msgid "Sums up the values of a configurable column for selected books."

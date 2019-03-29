@@ -37,7 +37,7 @@ class InterfacePlugin(InterfaceAction):
 	# The keyboard shortcut can be None if you dont want to use a keyboard
 	# shortcut. Remember that currently calibre has no central management for
 	# keyboard shortcuts, so try to use an unusual/unused shortcut.
-	action_spec = ('Sum Column', None, _('Sums up the values of a configurable column for selected books.'), None)
+	action_spec = (_('Sum Column'), None, _('Sums up the values of a configurable column for selected books.'), None)
 	popup_type = QToolButton.MenuButtonPopup
 	action_type = 'current'
 

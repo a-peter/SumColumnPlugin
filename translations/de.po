@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2019-03-29 14:18+0100\n"
-"PO-Revision-Date: 2019-03-29 14:23+0100\n"
+"PO-Revision-Date: 2019-03-29 14:47+0100\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -16,6 +16,10 @@ msgstr ""
 "Last-Translator: \n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Language: de\n"
+
+#: action.py:40
+msgid "Sum Column"
+msgstr "Spaltensumme"
 
 #: action.py:40
 msgid "Sums up the values of a configurable column for selected books."
