@@ -85,8 +85,8 @@ class ConfigWidget(QWidget):
 		self.layout = QGridLayout()
 		self.setLayout(self.layout)
 
-		toolTip = 'Spalte, die summiert werden soll'
-		column_label = QLabel('Spalte', self)
+		toolTip = _('Column to be summed up')
+		column_label = QLabel(_('Column'), self)
 		column_label.setToolTip(toolTip)
 
 		column_from_preferences = library_config[PREFS_KEY_COLUMN]
