@@ -32,7 +32,7 @@ class InterfacePlugin(InterfaceAction):
     # The keyboard shortcut can be None if you dont want to use a keyboard
     # shortcut. Remember that currently calibre has no central management for
     # keyboard shortcuts, so try to use an unusual/unused shortcut.
-    action_spec = ('Sum Column', None, 'Run the Sum Column plugin', None)
+    action_spec = ('Sum Column', None, 'Summiert die Werte einer konfigurierbaren Spalte für ausgewählte Bücher.', None)
 	popup_type = QToolButton.MenuButtonPopup
 	action_type = 'current'
 
@@ -54,7 +54,7 @@ class InterfacePlugin(InterfaceAction):
         icon = get_icons('images/icon.png')
 
 		self.menu = QMenu(self.gui)
-		action = self.create_menu_action(self.menu, "SumColumnConfig", "Anpassen...", triggered=self.show_configuration)
+		action = self.create_menu_action(self.menu, 'SumColumnConfig', '&Anpassen' + '...', triggered=self.show_configuration)
 		action.setIcon(QIcon(I('config.png')))
 		
         # The qaction is automatically created from the action_spec defined
@@ -68,7 +68,7 @@ class InterfacePlugin(InterfaceAction):
 			return
 		column = config.get_library_config_field(self.gui.current_db, config.PREFS_KEY_COLUMN)
 		book_ids = self.gui.library_view.get_selected_ids()
-		print('summing up', column, 'for', len(book_ids), 'books:', book_ids)
+		print('summing up', column, 'for', len(book_ids))
 		
 		self._do_sum_up(book_ids, column)
 		
@@ -85,7 +85,7 @@ class InterfacePlugin(InterfaceAction):
 		# Test if a column to sum is selected in the configuration
 		column = config.get_library_config_field(self.gui.current_db, config.PREFS_KEY_COLUMN)
 		if not column:
-			if not question_dialog(self.gui, 'Configure plugin', '<p>' + 'Keine Spalte ausgewählt. Wollen Sie jetzt eine Spalte auswählen?', show_copy_button=False):
+			if not question_dialog(self.gui, self.name, '<p>' + 'Keine Spalte ausgewählt. Wollen Sie jetzt eine Spalte auswählen?', show_copy_button=False):
 				return False
 			self.show_configuration()
 			return False
@@ -106,7 +106,7 @@ class InterfacePlugin(InterfaceAction):
 					print('Invalid value to sum up')
 		print('sum is', sum)
 		info_dialog(self.gui, 'Sum Column', '<p>' + 'Die Summe der Spalte ' + column + ' von ' + str(len(book_ids)) + ' Büchern ist ' + str(sum), show=True, show_copy_button=False)
-		self.gui.status_bar.show_message('Summe ist %d' % sum)
+		self.gui.status_bar.show_message('Summe ist %f' % sum)
 	
 	def show_configuration(self):
 		self.interface_action_base_plugin.do_user_config(self.gui)
