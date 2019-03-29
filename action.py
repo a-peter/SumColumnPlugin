@@ -120,7 +120,10 @@ class InterfacePlugin(InterfaceAction):
 				except:
 					print('Invalid value to sum up')
 		print('sum is', sum)
-		message = _('The sum of column {0} for {1} books is {2}.').format(column, str(len(book_ids)), str(sum))
+		if (len(book_ids) == 1):
+			message = _('The sum of column {0} for {1} book is {2}.').format(column, str(len(book_ids)), str(sum))
+		else:
+			message = _('The sum of column {0} for {1} books is {2}.').format(column, str(len(book_ids)), str(sum))		
 		info_dialog(self.gui, 'Sum Column', '<p>' + message, show=True, show_copy_button=False)
 		self.gui.status_bar.show_message(_('Sum is {0}').format(sum))
 	
