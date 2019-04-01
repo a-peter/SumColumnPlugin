@@ -10,13 +10,13 @@ __docformat__ = 'restructuredtext en'
 import copy
 
 try:
-	from PyQt5.Qt import QWidget, QGridLayout, QLabel, QHBoxLayout, QVBoxLayout
+	from PyQt5.Qt import QWidget, QGridLayout, QLabel, QHBoxLayout, QVBoxLayout, QListWidget, QListWidgetItem, QToolButton, QIcon
 except ImportError:
-	from PyQt4.Qt import QWidget, QGridLayout, QLabel, QHBoxLayout, QVBoxLayout
+	from PyQt4.Qt import QWidget, QGridLayout, QLabel, QHBoxLayout, QVBoxLayout, QListWidget, QListWidgetItem, QToolButton, QIcon
 
 from calibre.utils.config import JSONConfig
 
-from calibre_plugins.sum_column.utils import (get_library_uuid, CustomColumnComboBox)
+from calibre_plugins.sum_column.utils import (get_library_uuid, CustomColumnComboBox, CustomListWidget)
 
 # Library specific configuration
 PREFS_NAMESPACE = 'SumColumnPlugin'
@@ -70,6 +70,7 @@ class ConfigWidget(QWidget):
 	def __init__(self, plugin_action):
 		QWidget.__init__(self)
 		self.plugin_action = plugin_action
+		self.gui = plugin_action.gui
 		
 		print(dir(self.plugin_action))
 
@@ -92,12 +93,12 @@ class ConfigWidget(QWidget):
 	def _get_custom_columns(self):
 		valid_column_types = ['float','int']
 		custom_columns = self.plugin_action.gui.library_view.model().custom_columns
-		self.available_columns = {}
+		available_columns = {}
 		for key, column in custom_columns.iteritems():
 			datatype = column['datatype']
 			if datatype in valid_column_types:
-				self.available_columns[key] = column
-		return self.available_columns
+				available_columns[key] = column
+		return available_columns
 
 	def _initialize_layout(self):
 		# Get the current database
@@ -107,6 +108,28 @@ class ConfigWidget(QWidget):
 		layoutV = QVBoxLayout()
 		
 		layoutH = QHBoxLayout()
+
+		# Build the NEW gui
+		self.sourceList = CustomListWidget(self.gui, self.available_columns)
+		layoutH.addWidget(self.sourceList)
+		self.sourceList.get_selected_column()
+		
+		button_layout = QVBoxLayout()
+		layoutH.addLayout(button_layout)
+		
+		self.use_btn = QToolButton(self.gui)
+		self.use_btn.setIcon(QIcon(I('forward.png')))
+		self.use_btn.setToolTip('Use the row for statistic')
+		self.use_btn.clicked.connect(self._use_row)
+		
+		self.no_use_btn = QToolButton(self.gui)
+		self.no_use_btn.setIcon(QIcon(I('back.png')))
+		self.no_use_btn.setToolTip('Don\'t use the row for statistics')
+		self.no_use_btn.clicked.connect(self._no_use_row)
+		
+		button_layout.addWidget(self.use_btn)
+		button_layout.addStretch(1)
+		button_layout.addWidget(self.no_use_btn)
 				
 		# Build the OLD gui
 		layoutGrid = QGridLayout()
@@ -121,6 +144,12 @@ class ConfigWidget(QWidget):
 		layoutGrid.addWidget(column_label, 0, 0, 1, 1)
 		layoutGrid.addWidget(self.column_combo, 0, 1, 1, 2)
 		
-		layoutH.addLayout(layoutGrid)
 		layoutV.addLayout(layoutH)
+		layoutV.addLayout(layoutGrid)
 		self.setLayout(layoutV)
+		
+	def _use_row(self):
+		self.sourceList.get_selected_column()
+		
+	def _no_use_row(self):
+		None

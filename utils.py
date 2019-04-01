@@ -61,3 +61,22 @@ class CustomColumnComboBox(QComboBox):
 	def get_selected_column(self):
 		return self.column_names[self.currentIndex()]
 
+class CustomListWidget(QListWidget):
+	def __init__(self, parent, custom_columns={}):
+		QListWidget.__init__(self, parent)
+		self.init_with_list(custom_columns)
+		
+	def init_with_list(self, custom_columns):
+		self.clear()
+		self.column_names = []
+		for key in sorted(custom_columns.keys()):
+			self.column_names.append(key)
+			self.addItem('{0} ({1})'.format(custom_columns[key]['name'], key))
+			
+	def get_selected_column(self):
+		if self.currentRow() != -1:
+			row = self.column_names[self.currentRow()]
+			return row
+		else:
+			return None
+			
