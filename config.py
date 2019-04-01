@@ -10,9 +10,9 @@ __docformat__ = 'restructuredtext en'
 import copy
 
 try:
-	from PyQt5.Qt import QWidget, QGridLayout, QLabel
+	from PyQt5.Qt import QWidget, QGridLayout, QLabel, QHBoxLayout, QVBoxLayout
 except ImportError:
-	from PyQt4.Qt import QWidget, QGridLayout, QLabel
+	from PyQt4.Qt import QWidget, QGridLayout, QLabel, QHBoxLayout, QVBoxLayout
 
 from calibre.utils.config import JSONConfig
 
@@ -70,32 +70,17 @@ class ConfigWidget(QWidget):
 	def __init__(self, plugin_action):
 		QWidget.__init__(self)
 		self.plugin_action = plugin_action
+		
+		print(dir(self.plugin_action))
 
 		# Find user defined columns of type int or float
-		available_columns = self.get_custom_columns()
-		#for key, column in available_columns.iteritems():
-		#	print(key, column)
-		#print(available_columns)
+		self.available_columns = self._get_custom_columns()
+		#for key, column in self.available_columns.iteritems():
+		#	print(key, "###", column)
+		#print(self.available_columns)
 
-		# Get the current database
-		database = self.plugin_action.gui.current_db
-		library_config = get_library_config(database)
-
-		# Build the gui
-		self.layout = QGridLayout()
-		self.setLayout(self.layout)
-
-		toolTip = _('Column to be summed up')
-		column_label = QLabel(_('Column'), self)
-		column_label.setToolTip(toolTip)
-
-		column_from_preferences = library_config[PREFS_KEY_COLUMN]
-		self.column_combo = CustomColumnComboBox(self, available_columns, column_from_preferences)
-		self.column_combo.setToolTip(toolTip)
-
-		self.layout.addWidget(column_label, 0, 0, 1, 1)
-		self.layout.addWidget(self.column_combo, 0, 1, 1, 2)
-
+		self._initialize_layout()
+		
 	def save_settings(self):
 		database = self.plugin_action.gui.current_db
 		prefs = get_library_config(database)
@@ -104,12 +89,38 @@ class ConfigWidget(QWidget):
 		
 		set_library_config(database, prefs)
 
-	def get_custom_columns(self):
+	def _get_custom_columns(self):
 		valid_column_types = ['float','int']
 		custom_columns = self.plugin_action.gui.library_view.model().custom_columns
-		available_columns = {}
+		self.available_columns = {}
 		for key, column in custom_columns.iteritems():
 			datatype = column['datatype']
 			if datatype in valid_column_types:
-				available_columns[key] = column
-		return available_columns
+				self.available_columns[key] = column
+		return self.available_columns
+
+	def _initialize_layout(self):
+		# Get the current database
+		database = self.plugin_action.gui.current_db
+		library_config = get_library_config(database)
+
+		layoutV = QVBoxLayout()
+		
+		layoutH = QHBoxLayout()
+				
+		# Build the OLD gui
+		layoutGrid = QGridLayout()
+
+		toolTip = _('Column to be summed up')
+		column_label = QLabel(_('Column'), self)
+		column_label.setToolTip(toolTip)
+
+		column_from_preferences = library_config[PREFS_KEY_COLUMN]
+		self.column_combo = CustomColumnComboBox(self, self.available_columns, column_from_preferences)
+		self.column_combo.setToolTip(toolTip)
+		layoutGrid.addWidget(column_label, 0, 0, 1, 1)
+		layoutGrid.addWidget(self.column_combo, 0, 1, 1, 2)
+		
+		layoutH.addLayout(layoutGrid)
+		layoutV.addLayout(layoutH)
+		self.setLayout(layoutV)
