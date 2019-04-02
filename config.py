@@ -10,9 +10,9 @@ __docformat__ = 'restructuredtext en'
 import copy
 
 try:
-	from PyQt5.Qt import QWidget, QGridLayout, QLabel, QHBoxLayout, QVBoxLayout, QListWidget, QListWidgetItem, QToolButton, QIcon
+	from PyQt5.Qt import QWidget, QLabel, QHBoxLayout, QVBoxLayout, QToolButton, QIcon
 except ImportError:
-	from PyQt4.Qt import QWidget, QGridLayout, QLabel, QHBoxLayout, QVBoxLayout, QListWidget, QListWidgetItem, QToolButton, QIcon
+	from PyQt4.Qt import QWidget, QLabel, QHBoxLayout, QVBoxLayout, QToolButton, QIcon
 
 from calibre.utils.config import JSONConfig
 
@@ -22,13 +22,13 @@ from calibre_plugins.sum_column.utils import (get_library_uuid, CustomColumnComb
 PREFS_NAMESPACE = 'SumColumnPlugin'
 PREFS_KEY_SETTINGS = 'settings'
 
-PREFS_KEY_COLUMN = 'column'
+PREFS_KEY_COLUMN = 'column' # no longer needed. for settings migration
 PREFS_KEY_COLUMNS = 'columns'
 PREFS_KEY_SCHEMA_VERSION = 'SchemaVersion'
-DEFAULT_SCHEMA_VERSION = 1
+DEFAULT_SCHEMA_VERSION = 2
 
 DEFAULT_LIBRARY_VALUES = {
-	PREFS_KEY_COLUMN: ''
+	PREFS_KEY_COLUMNS: {}
 }
 
 # Plugin specific configuration
@@ -52,6 +52,13 @@ def migrate_library(db, library_config):
 		
 	library_config[PREFS_KEY_SCHEMA_VERSION] = DEFAULT_SCHEMA_VERSION
 	
+	if PREFS_KEY_COLUMN in library_config:
+		print('Deleting', PREFS_KEY_COLUMN, 'from preferences')
+		del library_config[PREFS_KEY_COLUMN]
+	if PREFS_KEY_COLUMNS not in library_config:
+		print('Adding', PREFS_KEY_COLUMNS, 'to preferences')
+		library_config[PREFS_KEY_COLUMNS] = {}
+	
 	set_library_config(db, library_config)
 
 def get_library_config(db):
@@ -72,23 +79,13 @@ class ConfigWidget(QWidget):
 		QWidget.__init__(self)
 		self.plugin_action = plugin_action
 		self.gui = plugin_action.gui
-		
-		#print(dir(self.plugin_action))
-
-		# Find user defined columns of type int or float
 		self.available_columns = self._get_custom_columns()
-		#for key, column in self.available_columns.iteritems():
-		#	print(key, "###", column)
-		#print(self.available_columns)
-
 		self._initialize_layout()
 		
 	def save_settings(self):
-		database = self.plugin_action.gui.current_db
+		database = self.gui.current_db
 		prefs = get_library_config(database)
-		
-		prefs[PREFS_KEY_COLUMN] = unicode(self.column_combo.get_selected_column())
-		
+		prefs[PREFS_KEY_COLUMNS] = self.destinationList.get_all_columns()
 		set_library_config(database, prefs)
 
 	def _get_custom_columns(self):
@@ -105,11 +102,16 @@ class ConfigWidget(QWidget):
 		# Get the current database
 		database = self.plugin_action.gui.current_db
 		library_config = get_library_config(database)
-
-		# Build the NEW gui
+		columns_from_preferences = library_config[PREFS_KEY_COLUMNS]
+		
+		# remove already configured columns from available columns
+		for key in columns_from_preferences.keys():
+			if key in self.available_columns:
+				del self.available_columns[key]
+						
+		# Build the gui
 		layoutH = QHBoxLayout()
 		
-		listLayout = QVBoxLayout()
 		self.sourceList = CustomListWidget(self.gui, self.available_columns)
 		self.sourceList.setToolTip(_('List of available columns'))
 		layoutH.addWidget(self.sourceList)
@@ -131,35 +133,17 @@ class ConfigWidget(QWidget):
 		button_layout.addStretch(1)
 		button_layout.addWidget(self.no_use_btn)
 		
-		self.destinationList = CustomListWidget(self.gui, {})
+		self.destinationList = CustomListWidget(self.gui, columns_from_preferences)
 		self.destinationList.setToolTip(_('List of evaluated columns'))
 		layoutH.addWidget(self.destinationList)
-				
-		# Build the OLD gui
-		layoutGrid = QGridLayout()
-
-		toolTip = _('Column to be summed up')
-		column_label = QLabel(_('Column'), self)
-		column_label.setToolTip(toolTip)
-
-		column_from_preferences = library_config[PREFS_KEY_COLUMN]
-		self.column_combo = CustomColumnComboBox(self, self.available_columns, column_from_preferences)
-		self.column_combo.setToolTip(toolTip)
-		layoutGrid.addWidget(column_label, 0, 0, 1, 1)
-		layoutGrid.addWidget(self.column_combo, 0, 1, 1, 2)
-		
-		layoutV = QVBoxLayout()
-		layoutV.addLayout(layoutH)
-		layoutV.addLayout(layoutGrid)
-		self.setLayout(layoutV)
+						
+		self.setLayout(layoutH)
 		
 	def _add_row(self):
 		item = self.sourceList.remove_selected_item()
-		#print('removed item from source', item)
 		self.destinationList.add_item(item)
 		
 	def _remove_row(self):
 		item = self.destinationList.remove_selected_item()
-		#print('removed item from dest', item)
 		self.sourceList.add_item(item)
 		

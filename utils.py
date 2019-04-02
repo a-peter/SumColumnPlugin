@@ -142,3 +142,5 @@ class CustomListWidget(QListWidget):
 		else:
 			return None
 			
+	def get_all_columns(self):
+		return self.custom_columns
