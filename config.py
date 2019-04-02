@@ -23,6 +23,7 @@ PREFS_NAMESPACE = 'SumColumnPlugin'
 PREFS_KEY_SETTINGS = 'settings'
 
 PREFS_KEY_COLUMN = 'column'
+PREFS_KEY_COLUMNS = 'columns'
 PREFS_KEY_SCHEMA_VERSION = 'SchemaVersion'
 DEFAULT_SCHEMA_VERSION = 1
 
@@ -105,14 +106,12 @@ class ConfigWidget(QWidget):
 		database = self.plugin_action.gui.current_db
 		library_config = get_library_config(database)
 
-		layoutV = QVBoxLayout()
-		
-		layoutH = QHBoxLayout()
-
 		# Build the NEW gui
+		layoutH = QHBoxLayout()
 		
 		listLayout = QVBoxLayout()
 		self.sourceList = CustomListWidget(self.gui, self.available_columns)
+		self.sourceList.setToolTip(_('List of available columns'))
 		layoutH.addWidget(self.sourceList)
 		
 		button_layout = QVBoxLayout()
@@ -120,12 +119,12 @@ class ConfigWidget(QWidget):
 		
 		self.use_btn = QToolButton(self.gui)
 		self.use_btn.setIcon(QIcon(I('forward.png')))
-		self.use_btn.setToolTip('Use the row for statistic')
+		self.use_btn.setToolTip(_('Use the column for statistic'))
 		self.use_btn.clicked.connect(self._add_row)
 		
 		self.no_use_btn = QToolButton(self.gui)
 		self.no_use_btn.setIcon(QIcon(I('back.png')))
-		self.no_use_btn.setToolTip('Don\'t use the row for statistics')
+		self.no_use_btn.setToolTip(_('Don\'t use the column for statistics'))
 		self.no_use_btn.clicked.connect(self._remove_row)
 		
 		button_layout.addWidget(self.use_btn)
@@ -133,6 +132,7 @@ class ConfigWidget(QWidget):
 		button_layout.addWidget(self.no_use_btn)
 		
 		self.destinationList = CustomListWidget(self.gui, {})
+		self.destinationList.setToolTip(_('List of evaluated columns'))
 		layoutH.addWidget(self.destinationList)
 				
 		# Build the OLD gui
@@ -148,6 +148,7 @@ class ConfigWidget(QWidget):
 		layoutGrid.addWidget(column_label, 0, 0, 1, 1)
 		layoutGrid.addWidget(self.column_combo, 0, 1, 1, 2)
 		
+		layoutV = QVBoxLayout()
 		layoutV.addLayout(layoutH)
 		layoutV.addLayout(layoutGrid)
 		self.setLayout(layoutV)
