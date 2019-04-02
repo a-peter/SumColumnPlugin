@@ -81,11 +81,11 @@ class InterfacePlugin(InterfaceAction):
 	def toolbar_action(self):
 		if not self._check_preconditions_for_sum():
 			return
-		column = config.get_library_config_field(self.gui.current_db, config.PREFS_KEY_COLUMN)
+		columns = config.get_library_config_field(self.gui.current_db, config.PREFS_KEY_COLUMNS)
 		book_ids = self.gui.library_view.get_selected_ids()
-		print('summing up', column, 'for', len(book_ids), 'books')
+		print('summing up', columns.keys(), 'for', len(book_ids), 'books')
 		
-		self._do_sum_up(book_ids, column)
+		self._do_sum_up(book_ids, columns)
 		
 	def _check_preconditions_for_sum(self):
 		# Test if any library is active in calibre
@@ -98,42 +98,50 @@ class InterfacePlugin(InterfaceAction):
 			print('No rows selected, aborting')
 			return False
 		# Test if a column to sum is selected in the configuration
-		column = config.get_library_config_field(self.gui.current_db, config.PREFS_KEY_COLUMN)
-		if not column:
-			if not question_dialog(self.gui, self.name, '<p>' + _('No column selected. Do you want to select a column to sum up now?'), show_copy_button=False):
+		columns = config.get_library_config_field(self.gui.current_db, config.PREFS_KEY_COLUMNS)
+		if not columns or len(columns)==0:
+			if not question_dialog(self.gui, self.name, '<p>' + _('No column(s) selected. Do you want to select columns to sum up now?'), show_copy_button=False):
 				return False
 			self.show_configuration()
 			return False
 		return True
 
-	def _do_sum_up(self, book_ids, column):
+	def _do_sum_up(self, book_ids, columns):
 		db = self.gui.current_db
-		# get the database label for the selected # format of the column
-		#print(db.field_metadata)
-		#print(db.field_metadata.keys())
-		#print(dir(db.field_metadata))
-		#print(db.field_metadata[column])
-		#print(dir(db.field_metadata[column]))
-		#print(db.field_metadata[column].get('name'))
-		lbl = db.field_metadata.key_to_label(column)
-		column_name = '"%s"' % db.field_metadata[column].get('name')
-		print('%s %s is known as %s' % (column, column_name, lbl) )
+		# get the database label for the selected # format of the columns
+		labels = {}
+		for key in columns.keys():
+			column_name = '%s' % db.field_metadata[key].get('name')
+			column_label = db.field_metadata.key_to_label(key) 
+			labels[column_label] = [column_name, 0]
+			print('%s (%s) is known as %s' % (key, column_name, column_label) )
+
 		sum = 0.0
 		for book_id in book_ids:
-			value = db.get_custom(book_id, label=lbl, index_is_id=True)
-			if not value is None:
-				try:
-					sum += value
-				except:
-					print('Invalid value to sum up')
-		print('sum is', sum)
-		if (len(book_ids) == 1):
-			message = _('The sum of column {0} for {1} book is {2}.').format(column_name, str(len(book_ids)), str(sum))
-		else:
-			message = _('The sum of column {0} for {1} books is {2}.').format(column_name, str(len(book_ids)), str(sum))		
-		info_dialog(self.gui, 'Sum Column', '<p>' + message, show=True, show_copy_button=False)
-		self.gui.status_bar.show_message(_('Sum is {0}').format(sum))
+			for label in labels.keys():
+				value = db.get_custom(book_id, label=label, index_is_id=True)
+				if not value is None:
+					try:
+						labels[label][1] += value
+					except:
+						print('Invalid value to sum up')
+
+		self._show_result(labels, len(book_ids))
 	
+	def _show_result(self, labels = {}, number_of_books = 0):
+		status = []
+		if (number_of_books == 1):
+			message = _('The sum is for {0} book <br/><table>').format(str(number_of_books))
+		else:
+			message = _('The sum is for {0} books <br/><table>').format(str(number_of_books))
+		for k,v in labels.items():
+			message += '<tr><td>{0}</td><td>=</td><td>{1}</td></tr>'.format(v[0], v[1])
+			status.append('{0} = {1}'.format(v[0],v[1]))
+		message += '</table>'
+		info_dialog(self.gui, 'Sum Column', '<p>' + message, show=True, show_copy_button=False)
+		self.gui.status_bar.show_message(', '.join(status))
+		print(', '.join(status))
+		
 	def show_configuration(self):
 		self.interface_action_base_plugin.do_user_config(self.gui)
 		
