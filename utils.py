@@ -69,9 +69,43 @@ class CustomListWidget(QListWidget):
 	def init_with_list(self, custom_columns):
 		self.clear()
 		self.column_names = []
+		self.custom_columns = {}
 		for key in sorted(custom_columns.keys()):
-			self.column_names.append(key)
-			self.addItem('{0} ({1})'.format(custom_columns[key]['name'], key))
+			self._add_item(key, custom_columns[key])
+			
+	def add_item(self, value_pair):
+		if value_pair != None:
+			if value_pair[0] in self.custom_columns:
+				print('{0} already in list'.format(value_pair[0]))
+				return
+			self._add_item(value_pair[0], value_pair[1])
+			print('added', value_pair)
+
+	def _add_item(self, row, data):
+		self.column_names.append(row)
+		self.custom_columns[row] = data
+		self.addItem('{0} ({1})'.format(data['name'], row))
+			
+	def remove_selected_item(self):
+		if self.currentRow() != -1:
+			# prepare data
+			item_index = self.currentRow()
+			row = self.column_names[item_index]
+			value_pair = (row, self.custom_columns[row])
+			
+			# remove data from lists
+			del self.column_names[item_index]
+			del self.custom_columns[row]
+			self.takeItem(item_index)
+			
+			# for debug:
+			#print('removed', value_pair)
+			#print(self.column_names)
+			#print(self.custom_columns)
+			
+			return value_pair
+		else:
+			return None
 			
 	def get_selected_column(self):
 		if self.currentRow() != -1:
@@ -79,4 +113,9 @@ class CustomListWidget(QListWidget):
 			return row
 		else:
 			return None
+			
+	def get_selected_item(self):
+		if self.currentRow() != -1:
+			row = self.column_names[self.currentRow()]
+			return (row, self.custom_columns[row])
 			

@@ -72,7 +72,7 @@ class ConfigWidget(QWidget):
 		self.plugin_action = plugin_action
 		self.gui = plugin_action.gui
 		
-		print(dir(self.plugin_action))
+		#print(dir(self.plugin_action))
 
 		# Find user defined columns of type int or float
 		self.available_columns = self._get_custom_columns()
@@ -110,9 +110,10 @@ class ConfigWidget(QWidget):
 		layoutH = QHBoxLayout()
 
 		# Build the NEW gui
+		
+		listLayout = QVBoxLayout()
 		self.sourceList = CustomListWidget(self.gui, self.available_columns)
 		layoutH.addWidget(self.sourceList)
-		self.sourceList.get_selected_column()
 		
 		button_layout = QVBoxLayout()
 		layoutH.addLayout(button_layout)
@@ -120,16 +121,19 @@ class ConfigWidget(QWidget):
 		self.use_btn = QToolButton(self.gui)
 		self.use_btn.setIcon(QIcon(I('forward.png')))
 		self.use_btn.setToolTip('Use the row for statistic')
-		self.use_btn.clicked.connect(self._use_row)
+		self.use_btn.clicked.connect(self._add_row)
 		
 		self.no_use_btn = QToolButton(self.gui)
 		self.no_use_btn.setIcon(QIcon(I('back.png')))
 		self.no_use_btn.setToolTip('Don\'t use the row for statistics')
-		self.no_use_btn.clicked.connect(self._no_use_row)
+		self.no_use_btn.clicked.connect(self._remove_row)
 		
 		button_layout.addWidget(self.use_btn)
 		button_layout.addStretch(1)
 		button_layout.addWidget(self.no_use_btn)
+		
+		self.destinationList = CustomListWidget(self.gui, {})
+		layoutH.addWidget(self.destinationList)
 				
 		# Build the OLD gui
 		layoutGrid = QGridLayout()
@@ -148,8 +152,13 @@ class ConfigWidget(QWidget):
 		layoutV.addLayout(layoutGrid)
 		self.setLayout(layoutV)
 		
-	def _use_row(self):
-		self.sourceList.get_selected_column()
+	def _add_row(self):
+		item = self.sourceList.remove_selected_item()
+		#print('removed item from source', item)
+		self.destinationList.add_item(item)
 		
-	def _no_use_row(self):
-		None
+	def _remove_row(self):
+		item = self.destinationList.remove_selected_item()
+		#print('removed item from dest', item)
+		self.sourceList.add_item(item)
+		
