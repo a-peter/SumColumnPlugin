@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2019-03-29 14:45+0100\n"
+"POT-Creation-Date: 2019-04-02 20:40+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -32,26 +32,30 @@ msgid "&Configure"
 msgstr ""
 
 #: action.py:103
-msgid "No column selected. Do you want to select a column to sum up now?"
+msgid "No column(s) selected. Do you want to select columns to sum up now?"
 msgstr ""
 
-#: action.py:124
-msgid "The sum of column {0} for {1} book is {2}."
+#: action.py:134
+msgid "The sum is for {0} book <br/><table>"
 msgstr ""
 
-#: action.py:126
-msgid "The sum of column {0} for {1} books is {2}."
+#: action.py:136
+msgid "The sum is for {0} books <br/><table>"
 msgstr ""
 
-#: action.py:128
-msgid "Sum is {0}"
+#: config.py:116
+msgid "List of available columns"
 msgstr ""
 
-#: config.py:88
-msgid "Column to be summed up"
+#: config.py:124
+msgid "Use the column for statistic"
 msgstr ""
 
-#: config.py:89
-msgid "Column"
+#: config.py:129
+msgid "Don't use the column for statistics"
+msgstr ""
+
+#: config.py:137
+msgid "List of evaluated columns"
 msgstr ""
 

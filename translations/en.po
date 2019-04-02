@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2019-03-29 14:18+0100\n"
-"PO-Revision-Date: 2019-03-29 14:47+0100\n"
+"POT-Creation-Date: 2019-04-02 20:40+0200\n"
+"PO-Revision-Date: 2019-04-02 20:44+0200\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -34,25 +34,29 @@ msgid "&Configure"
 msgstr "&Configure"
 
 #: action.py:103
-msgid "No column selected. Do you want to select a column to sum up now?"
-msgstr "No column selected. Do you want to select a column to sum up now?"
+msgid "No column(s) selected. Do you want to select columns to sum up now?"
+msgstr "No column(s) selected. Do you want to select columns to sum up now?"
 
-#: action.py:124
-msgid "The sum of column {0} for {1} book is {2}."
-msgstr "The sum of column {0} for {1} book is {2}."
+#: action.py:134
+msgid "The sum is for {0} book <br/><table>"
+msgstr "The sum is for {0} book <br/><table>"
 
-#: action.py:126
-msgid "The sum of column {0} for {1} books is {2}."
-msgstr "The sum of column {0} for {1} books is {2}."
+#: action.py:136
+msgid "The sum is for {0} books <br/><table>"
+msgstr "The sum is for {0} books <br/><table>"
 
-#: action.py:128
-msgid "Sum is {0}"
-msgstr "Sum is {0}"
+#: config.py:116
+msgid "List of available columns"
+msgstr "List of available columns"
 
-#: config.py:88
-msgid "Column to be summed up"
-msgstr "Column to be summed up"
+#: config.py:124
+msgid "Use the column for statistic"
+msgstr "Use the column for statistic"
 
-#: config.py:89
-msgid "Column"
-msgstr "Column"
+#: config.py:129
+msgid "Don't use the column for statistics"
+msgstr "Don't use the column for statistics"
+
+#: config.py:137
+msgid "List of evaluated columns"
+msgstr "List of evaluated columns"
