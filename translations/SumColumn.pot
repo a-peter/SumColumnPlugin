@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2019-04-02 20:40+0200\n"
+"POT-Creation-Date: 2019-04-02 22:22+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -43,19 +43,19 @@ msgstr ""
 msgid "The sum is for {0} books <br/><table>"
 msgstr ""
 
-#: config.py:116
+#: config.py:122
 msgid "List of available columns"
 msgstr ""
 
-#: config.py:124
+#: config.py:130
 msgid "Use the column for statistic"
 msgstr ""
 
-#: config.py:129
+#: config.py:135
 msgid "Don't use the column for statistics"
 msgstr ""
 
-#: config.py:137
+#: config.py:143
 msgid "List of evaluated columns"
 msgstr ""
 

@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2019-04-02 20:40+0200\n"
-"PO-Revision-Date: 2019-04-02 20:41+0200\n"
+"POT-Creation-Date: 2019-04-02 22:22+0200\n"
+"PO-Revision-Date: 2019-04-02 22:23+0200\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -15,6 +15,7 @@ msgstr ""
 "X-Generator: Poedit 2.2.1\n"
 "Last-Translator: \n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: en\n"
 
 #: action.py:40
 msgid "Sum Column"
@@ -44,18 +45,18 @@ msgstr ""
 msgid "The sum is for {0} books <br/><table>"
 msgstr ""
 
-#: config.py:116
+#: config.py:122
 msgid "List of available columns"
 msgstr ""
 
-#: config.py:124
+#: config.py:130
 msgid "Use the column for statistic"
 msgstr ""
 
-#: config.py:129
+#: config.py:135
 msgid "Don't use the column for statistics"
 msgstr ""
 
-#: config.py:137
+#: config.py:143
 msgid "List of evaluated columns"
 msgstr ""

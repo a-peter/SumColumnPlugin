@@ -18,6 +18,12 @@ from calibre.utils.config import JSONConfig
 
 from calibre_plugins.sum_column.utils import (get_library_uuid, CustomColumnComboBox, CustomListWidget)
 
+try:
+    load_translations()
+except NameError:
+    pass # load_translations() added in calibre 1.9
+
+
 # Library specific configuration
 PREFS_NAMESPACE = 'SumColumnPlugin'
 PREFS_KEY_SETTINGS = 'settings'
