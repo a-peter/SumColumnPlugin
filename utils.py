@@ -62,6 +62,16 @@ class CustomColumnComboBox(QComboBox):
 		return self.column_names[self.currentIndex()]
 
 class CustomListWidget(QListWidget):
+	"""Class to manage calibre columns
+	
+	This special ListWidget takes a list of calibre columns.
+	The columns are added as a special string formatted with
+	name and internal name.
+	
+	Adding and removing of entries with calibre data is supported
+	with methods add_item and remove_selected_item.
+	"""
+	
 	def __init__(self, parent, custom_columns={}):
 		QListWidget.__init__(self, parent)
 		self.init_with_list(custom_columns)
@@ -74,19 +84,28 @@ class CustomListWidget(QListWidget):
 			self._add_item(key, custom_columns[key])
 			
 	def add_item(self, value_pair):
+		"""Adds a new calibre column_names
+		
+		The method expects a tuple with two entries. The first
+		entry contains the internal search name with preceeding # sign.
+		The second entry of the tuple contains the data of the calibre
+		column."""
 		if value_pair != None:
 			if value_pair[0] in self.custom_columns:
 				print('{0} already in list'.format(value_pair[0]))
 				return
 			self._add_item(value_pair[0], value_pair[1])
-			print('added', value_pair)
 
 	def _add_item(self, row, data):
 		self.column_names.append(row)
 		self.custom_columns[row] = data
 		self.addItem('{0} ({1})'.format(data['name'], row))
+		#print('added', value_pair)
 			
 	def remove_selected_item(self):
+		""" Removes the selected line
+		
+		Returns the removed pair of internal name and calibre data."""
 		if self.currentRow() != -1:
 			# prepare data
 			item_index = self.currentRow()
@@ -108,6 +127,7 @@ class CustomListWidget(QListWidget):
 			return None
 			
 	def get_selected_column(self):
+		"""Returns the internal name of the calibre column"""
 		if self.currentRow() != -1:
 			row = self.column_names[self.currentRow()]
 			return row
@@ -115,7 +135,10 @@ class CustomListWidget(QListWidget):
 			return None
 			
 	def get_selected_item(self):
+		"""Returns the selected item as a tuple"""
 		if self.currentRow() != -1:
 			row = self.column_names[self.currentRow()]
 			return (row, self.custom_columns[row])
+		else:
+			return None
 			
