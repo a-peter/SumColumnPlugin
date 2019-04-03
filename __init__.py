@@ -24,7 +24,7 @@ class InterfaceSumColumn(InterfaceActionBase):
 	supported_platforms = ['windows', 'osx', 'linux']
 	author              = 'Anselm Peter'
 	version             = (0, 3, 0)
-	minimum_calibre_version = (0, 7, 53)
+	minimum_calibre_version = (1, 9, 0)
 
 	#: This field defines the GUI plugin class that contains all the code
 	#: that actually does something. Its format is module_path:class_name

@@ -10,13 +10,13 @@ __docformat__ = 'restructuredtext en'
 import copy
 
 try:
-	from PyQt5.Qt import QWidget, QLabel, QHBoxLayout, QVBoxLayout, QToolButton, QIcon
+	from PyQt5.Qt import QWidget, QHBoxLayout, QVBoxLayout, QToolButton, QIcon
 except ImportError:
-	from PyQt4.Qt import QWidget, QLabel, QHBoxLayout, QVBoxLayout, QToolButton, QIcon
+	from PyQt4.Qt import QWidget, QHBoxLayout, QVBoxLayout, QToolButton, QIcon
 
 from calibre.utils.config import JSONConfig
 
-from calibre_plugins.sum_column.utils import (get_library_uuid, CustomColumnComboBox, CustomListWidget)
+from calibre_plugins.sum_column.utils import CustomListWidget
 
 try:
     load_translations()
@@ -28,7 +28,7 @@ except NameError:
 PREFS_NAMESPACE = 'SumColumnPlugin'
 PREFS_KEY_SETTINGS = 'settings'
 
-PREFS_KEY_COLUMN = 'column' # no longer needed. for settings migration
+PREFS_KEY_COLUMN = 'column' # no longer needed. keep for settings migration
 PREFS_KEY_COLUMNS = 'columns'
 PREFS_KEY_SCHEMA_VERSION = 'SchemaVersion'
 DEFAULT_SCHEMA_VERSION = 2
@@ -96,7 +96,7 @@ class ConfigWidget(QWidget):
 
 	def _get_custom_columns(self):
 		valid_column_types = ['float','int']
-		custom_columns = self.plugin_action.gui.library_view.model().custom_columns
+		custom_columns = self.gui.library_view.model().custom_columns
 		available_columns = {}
 		for key, column in custom_columns.iteritems():
 			datatype = column['datatype']
@@ -106,7 +106,7 @@ class ConfigWidget(QWidget):
 
 	def _initialize_layout(self):
 		# Get the current database
-		database = self.plugin_action.gui.current_db
+		database = self.gui.current_db
 		library_config = get_library_config(database)
 		columns_from_preferences = library_config[PREFS_KEY_COLUMNS]
 		

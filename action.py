@@ -114,7 +114,7 @@ class InterfacePlugin(InterfaceAction):
 			column_name = '%s' % db.field_metadata[key].get('name')
 			column_label = db.field_metadata.key_to_label(key) 
 			labels[column_label] = [column_name, 0]
-			print('%s (%s) is known as %s' % (key, column_name, column_label) )
+			# print('%s (%s) is known as %s' % (key, column_name, column_label) )
 
 		sum = 0.0
 		for book_id in book_ids:
@@ -124,7 +124,7 @@ class InterfacePlugin(InterfaceAction):
 					try:
 						labels[label][1] += value
 					except:
-						print('Invalid value to sum up')
+						print('Invalid value "{0}" to sum up'.format(value))
 
 		self._show_result(labels, len(book_ids))
 	

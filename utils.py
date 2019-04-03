@@ -21,46 +21,6 @@ except ImportError as e:
                           QRegExpValidator, QRegExp, QTextEdit,
                           QListWidget, QAbstractItemView)
 						  
-def get_library_uuid(db):
-	try:
-		library_uuid = db.library_id
-	except:
-		library_uuid = ''
-	return library_uuid
-
-class CustomColumnComboBox(QComboBox):
-
-	def __init__(self, parent, custom_columns={}, selected_column='', initial_items=['']):
-		QComboBox.__init__(self, parent)
-		self.populate_combo(custom_columns, selected_column, initial_items)
-
-	def populate_combo(self, custom_columns, selected_column, initial_items=['']):
-		self.clear()
-		self.column_names = list(initial_items)
-		if len(initial_items) > 0:
-			self.addItems(initial_items)
-		selected_idx = 0
-		for idx, value in enumerate(initial_items):
-			if value == selected_column:
-				selected_idx = idx
-		for key in sorted(custom_columns.keys()):
-			self.column_names.append(key)
-			self.addItem('%s (%s)'%(key, custom_columns[key]['name']))
-			if key == selected_column:
-				selected_idx = len(self.column_names) - 1
-		self.setCurrentIndex(selected_idx)
-		
-	def select_column(self, key):
-		selected_idx = 0
-		for i, val in enumerate(self.column_names):
-			if val == key:
-				selected_idx = i
-				break
-		self.setCurrentIndex(selected_idx)
-
-	def get_selected_column(self):
-		return self.column_names[self.currentIndex()]
-
 class CustomListWidget(QListWidget):
 	"""Class to manage calibre columns
 	
@@ -100,7 +60,6 @@ class CustomListWidget(QListWidget):
 		self.column_names.append(row)
 		self.custom_columns[row] = data
 		self.addItem('{0} ({1})'.format(data['name'], row))
-		#print('added', value_pair)
 			
 	def remove_selected_item(self):
 		""" Removes the selected line
@@ -117,28 +76,7 @@ class CustomListWidget(QListWidget):
 			del self.custom_columns[row]
 			self.takeItem(item_index)
 			
-			# for debug:
-			#print('removed', value_pair)
-			#print(self.column_names)
-			#print(self.custom_columns)
-			
 			return value_pair
-		else:
-			return None
-			
-	def get_selected_column(self):
-		"""Returns the internal name of the calibre column"""
-		if self.currentRow() != -1:
-			row = self.column_names[self.currentRow()]
-			return row
-		else:
-			return None
-			
-	def get_selected_item(self):
-		"""Returns the selected item as a tuple"""
-		if self.currentRow() != -1:
-			row = self.column_names[self.currentRow()]
-			return (row, self.custom_columns[row])
 		else:
 			return None
 			
